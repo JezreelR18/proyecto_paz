@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cultura de Paz - Para Estudiantes</title>
+    <link rel="stylesheet" href="public/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Cultura de Paz</h1>
+        <p>Fomentando empatía, respeto y convivencia pacífica entre estudiantes</p>
+        
+        <div class="user-auth">
+            <div id="authSection" style="display: none;">
+                <button class="btn btn-outline" onclick="AuthUI.showLogin()">Iniciar Sesión</button>
+                <button class="btn" onclick="AuthUI.showRegister()">Registrarse</button>
+            </div>
+            
+            <div id="userSection" style="display: none;">
+                <span>Hola, <span id="userName"></span></span>
+                <button class="btn btn-outline" id="logoutBtn">Cerrar Sesión</button>
+            </div>
+        </div>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="index.php?page=home">Inicio</a></li>
+            <li><a href="index.php?page=biblioteca">Biblioteca Digital</a></li>
+            <li><a href="index.php?page=herramientas">Herramientas Interactivas</a></li>
+            <li><a href="index.php?page=frases">Frases Inspiradoras</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">

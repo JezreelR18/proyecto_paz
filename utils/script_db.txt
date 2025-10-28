@@ -1,0 +1,135 @@
+CREATE USER 'aleli_garcia'@'localhost' IDENTIFIED BY 'Aleli2025';
+
+GRANT ALL PRIVILEGES ON proyecto_paz_db.* TO 'aleli_garcia'@'localhost';
+
+FLUSH PRIVILEGES;
+
+
+CREATE TABLE users (
+    id_user INT AUTO_INCREMENT PRIMARY KEY,
+    fullname VARCHAR(100) NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    is_signed BOOLEAN DEFAULT FALSE,
+    enable BOOLEAN DEFAULT TRUE,
+    date_of_register TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE resources (
+    id_resource INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    type_resource VARCHAR(50) NOT NULL,
+    url VARCHAR(500) NOT NULL,
+    description TEXT,
+    id_user_register INT, -- Nombre corregido
+    date_of_register TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_user_register) REFERENCES users(id_user) ON DELETE SET NULL
+);
+
+
+CREATE TABLE comments (
+    id_comment INT AUTO_INCREMENT PRIMARY KEY,
+    comment TEXT NOT NULL,
+    level_monitoring VARCHAR(20) NOT NULL,
+    id_user_register INT, -- Nombre corregido
+    date_of_register TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_user_register) REFERENCES users(id_user) ON DELETE SET NULL
+);
+
+
+CREATE TABLE bitacore (
+    id_logger INT AUTO_INCREMENT PRIMARY KEY,
+    module VARCHAR(255) NOT NULL,
+    note TEXT NOT NULL,
+    id_user_register INT, -- Nombre corregido
+    date_of_register TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_user_register) REFERENCES users(id_user) ON DELETE SET NULL
+);
+
+
+CREATE TABLE questionnaires (
+    id_questionnaire INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    category ENUM('emotional_state', 'stress_level', 'conflict_tendencies', 'general_wellbeing') NOT NULL,
+    total_questions INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE questions (
+    id_question INT AUTO_INCREMENT PRIMARY KEY,
+    id_questionnaire INT NOT NULL,
+    question_text TEXT NOT NULL,
+    question_type ENUM('multiple_choice', 'likert_scale', 'open_ended') DEFAULT 'likert_scale',
+    options JSON,
+    weight DECIMAL(3,2) DEFAULT 1.00,
+    question_order INT NOT NULL,
+    dimension ENUM('emotional', 'stress', 'conflict', 'self_awareness') NOT NULL,
+    FOREIGN KEY (id_questionnaire) REFERENCES questionnaires(id_questionnaire) ON DELETE CASCADE,
+    INDEX idx_questionnaire (id_questionnaire),
+    INDEX idx_question_order (question_order)
+);
+
+
+CREATE TABLE user_answers (
+    id_user_answer INT AUTO_INCREMENT PRIMARY KEY,
+    id_user INT NOT NULL,
+    id_question INT NOT NULL,
+    id_questionnaire INT NOT NULL,
+    answer_value TEXT NOT NULL,
+    answered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE, -- Corregido
+    FOREIGN KEY (id_question) REFERENCES questions(id_question) ON DELETE CASCADE,
+    FOREIGN KEY (id_questionnaire) REFERENCES questionnaires(id_questionnaire) ON DELETE CASCADE,
+    INDEX idx_user_questionnaire (id_user, id_questionnaire),
+    INDEX idx_user_question (id_user, id_question)
+);
+
+
+CREATE TABLE assessment_results (
+    id_result INT AUTO_INCREMENT PRIMARY KEY,
+    id_user INT NOT NULL,
+    id_questionnaire INT NOT NULL,
+    total_score DECIMAL(5,2) NOT NULL,
+    emotional_score DECIMAL(5,2),
+    stress_score DECIMAL(5,2),
+    conflict_score DECIMAL(5,2),
+    self_awareness_score DECIMAL(5,2),
+    mental_state_category ENUM('excelente', 'bueno', 'regular', 'necesita_mejora', 'preocupante') NOT NULL,
+    recommendations TEXT,
+    completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    duration_minutes INT,
+    FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE, -- Corregido
+    FOREIGN KEY (id_questionnaire) REFERENCES questionnaires(id_questionnaire) ON DELETE CASCADE,
+    INDEX idx_user_results (id_user),
+    INDEX idx_questionnaire_results (id_questionnaire),
+    INDEX idx_completion_date (completed_at)
+);
+
+
+CREATE TABLE result_recommendations (
+    id_recommendation INT AUTO_INCREMENT PRIMARY KEY,
+    id_result INT NOT NULL,
+    id_resource INT NOT NULL, -- Corregido
+    recommendation_reason TEXT,
+    priority_level INT DEFAULT 1,
+    FOREIGN KEY (id_result) REFERENCES assessment_results(id_result) ON DELETE CASCADE,
+    FOREIGN KEY (id_resource) REFERENCES resources(id_resource) ON DELETE CASCADE, -- Corregido
+    INDEX idx_result_recommendations (id_result)
+);
+
+
+CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_resources_user_register ON resources(id_user_register);
+CREATE INDEX idx_comments_user_register ON comments(id_user_register);
+CREATE INDEX idx_bitacore_user_register ON bitacore(id_user_register);
+
+
+SHOW TABLES;
