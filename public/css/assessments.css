@@ -62,7 +62,6 @@ textarea.q-open { width: 100%; min-height: 80px; resize: vertical; }
 .reco a { text-decoration: none; color:#2563eb; font-weight: 600; word-break: break-word; }
 
 
-/* ====== Estadísticas de usuario ====== */
 .user-stats {
   position: absolute;
   top: 20px;

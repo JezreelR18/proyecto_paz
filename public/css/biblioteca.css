@@ -1,18 +1,18 @@
 .biblioteca-motivacional{
   padding:1px;
-  background:#f7fafb;                 /* fondo general muy claro */
+  background:#f7fafb;      
 }
 
 .bib-wrap{
   display:grid;
   grid-template-columns: 180px 3fr 5fr 180px;
-  grid-template-rows: 180px 230px 180px;  /* banner, pósters, pósters, fila inferior */
+  grid-template-rows: 180px 230px 180px; 
   gap:10px;
-  background:#e6eef0;                  /* panel gris verdoso (como en la lámina) */
+  background:#e6eef0;       
   padding:4px;
   border-radius:12px;
   position:relative;
-  max-width:1500px;                     /* ancho contenido para look “lámina” */
+  max-width:1500px;           
   margin-inline:auto;
 }
 
@@ -29,12 +29,12 @@
 }
 .bib-item.contain img{ object-fit:contain; background:#fff; }
 
-.i1{ grid-column:1; grid-row:1; }                 /* Cuadro izq arriba */
+.i1{ grid-column:1; grid-row:1; }      
 .banner{
-  grid-column:2 / 4; grid-row:1;                  /* Banner ancho centrado */
-  background:#ffdca1;                             /* amarillo cálido */
+  grid-column:2 / 4; grid-row:1;               
+  background:#ffdca1;                    
   display:grid; place-items:center; text-align:center;
-  border-radius:40px;                              /* “píldora” */
+  border-radius:40px;                            
   box-shadow:0 4px 10px rgba(0,0,0,.08);
 }
 .banner h3{

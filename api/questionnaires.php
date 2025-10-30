@@ -1,17 +1,16 @@
 <?php
-// api/questionnaires.php
 declare(strict_types=1);
 header('Content-Type: application/json; charset=utf-8');
 session_start();
 
-require_once __DIR__ . '/../model/Database.php';          // tu clase existente
+require_once __DIR__ . '/../model/Database.php';
 require_once __DIR__ . '/../model/QuestionnaireModel.php';
 require_once __DIR__ . '/../model/AssessmentService.php';
 
 function send($payload, int $code=200){ http_response_code($code); echo json_encode($payload, JSON_UNESCAPED_UNICODE); exit; }
 
 try {
-  $db = (new Database())->getConnection(); // ajusta al nombre real
+  $db = (new Database())->getConnection();
   $qm = new QuestionnaireModel($db);
   $svc = new AssessmentService($db);
 
@@ -83,7 +82,6 @@ try {
     $idResult = (int)($_GET['id_result'] ?? 0);
     if (!$idResult) send(['ok'=>false,'error'=>'id_result requerido'], 400);
 
-    // 1) Cabecera del resultado + cuestionario
     $qHead = $db->prepare(
       "SELECT r.id_result, r.id_user, r.id_questionnaire, r.total_score, r.emotional_score,
               r.stress_score, r.conflict_score, r.self_awareness_score, r.mental_state_category,
@@ -96,7 +94,6 @@ try {
     $head = $qHead->fetch(PDO::FETCH_ASSOC);
     if (!$head) send(['ok'=>false,'error'=>'Resultado no encontrado'], 404);
 
-    // 2) Recomendaciones guardadas para ese resultado
     $qReco = $db->prepare(
       "SELECT rr.id_resource, rr.recommendation_reason, rr.priority_level,
               res.title, res.type_resource, res.url, res.description
@@ -108,8 +105,6 @@ try {
     $qReco->execute([$idResult]);
     $reco = $qReco->fetchAll(PDO::FETCH_ASSOC);
 
-    // 3) Preguntas + respuesta del usuario 'congelada' a la fecha del resultado
-    //    (tomamos la respuesta más reciente de cada pregunta con timestamp <= completed_at)
     $completedAt = $head['completed_at'];
 
     $qAns = $db->prepare(

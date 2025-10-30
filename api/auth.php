@@ -10,7 +10,6 @@ require_once __DIR__ . '/../model/UserModel.php';
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Convierte notices/warnings en excepciones y responde JSON
 set_error_handler(function($severity, $message, $file, $line) {
   throw new ErrorException($message, 0, $severity, $file, $line);
 });
@@ -26,7 +25,6 @@ set_exception_handler(function($e) {
   exit;
 });
 
-// Iniciar sesión una sola vez
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -36,7 +34,6 @@ $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 $userModel = new UserModel();
 
-// Manejar preflight request (CORS)
 if ($method === 'OPTIONS') {
     http_response_code(200);
     exit;
@@ -62,7 +59,6 @@ if ($action === 'session' && $method === 'GET') {
 if ($action === 'signup' && $method === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
 
-    // Validar campos
     $required = ['fullname', 'username', 'password', 'email'];
     foreach ($required as $field) {
         if (empty($data[$field])) {
@@ -94,9 +90,7 @@ if ($action === 'signup' && $method === 'POST') {
     }
 }
 
-/**
- * === ENDPOINT: Inicio de sesión (signin) ===
- */
+
 if ($action === 'signin' && $method === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
 
@@ -135,5 +129,4 @@ if ($action === 'check' && $method === 'GET') {
     }
 }
 
-// Si ninguna ruta coincide:
 sendResponse(false, 'Ruta o método no válido', null, 400);

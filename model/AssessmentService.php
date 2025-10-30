@@ -1,12 +1,10 @@
 <?php
-// model/AssessmentService.php
 declare(strict_types=1);
 
 class AssessmentService {
   private PDO $db;
   public function __construct(PDO $db) { $this->db = $db; }
 
-  /** Convierte una respuesta textual en puntaje numérico según tipo/opciones */
   private function scoreAnswer(array $question, string $answer): float {
     $type = $question['question_type'];
     $weight = (float)$question['weight'];
@@ -21,7 +19,6 @@ class AssessmentService {
       $opts = [];
       try { $opts = json_decode($question['options'] ?? '[]', true, 512, JSON_THROW_ON_ERROR); }
       catch (\Throwable $e) { $opts = []; }
-      // Cada opción puede tener "value" y opcionalmente "score"
       foreach ($opts as $op) {
         $val = (string)($op['value'] ?? $op['text'] ?? '');
         if ($val === $answer) {
@@ -32,11 +29,9 @@ class AssessmentService {
       return 0.0;
     }
 
-    // open_ended -> sin puntaje directo
     return 0.0;
   }
 
-  /** Calcula y persiste el resultado + retorna datos y recomendaciones (array) */
   public function calculateAndStore(
     int $userId, array $questionnaire, array $answers
   ): array {
@@ -62,7 +57,6 @@ class AssessmentService {
       $total += $score; $totalMax += $maxForQ;
     }
 
-    // Normalizados a 100
     $toPct = function(float $s, float $m): float { return $m > 0 ? round(($s/$m)*100, 2) : 0.0; };
     $em  = $toPct($dimTotals['emotional'], $dimMax['emotional']);
     $st  = $toPct($dimTotals['stress'], $dimMax['stress']);
@@ -70,10 +64,9 @@ class AssessmentService {
     $sa  = $toPct($dimTotals['self_awareness'], $dimMax['self_awareness']);
     $tot = $toPct($total, $totalMax);
 
-    $category = $this->classify($tot, $st); // usa total y estrés como atenuante
+    $category = $this->classify($tot, $st);
     $reco = $this->recommendResources($qid, $em, $st, $co, $sa, $category);
 
-    // guardamos resultado
     $this->db->beginTransaction();
     try {
       $ins = $this->db->prepare(
@@ -120,7 +113,6 @@ class AssessmentService {
   }
 
   private function classify(float $totalPct, float $stressPct): string {
-    // Regla simple: estrés alto baja una categoría
     $base = match (true) {
       $totalPct >= 85 => 'excelente',
       $totalPct >= 70 => 'bueno',
@@ -133,21 +125,18 @@ class AssessmentService {
     return $base;
   }
 
-  /** Devuelve top 3 recursos en base a la dimensión más baja y categoría */
   private function recommendResources(
     int $idQuestionnaire, float $em, float $st, float $co, float $sa, string $category
   ): array {
-    // dimensión “más necesitada” (menor porcentaje)
     $dimOrder = [
       'emotional' => $em,
       'stress' => $st,
       'conflict' => $co,
       'self_awareness' => $sa,
     ];
-    asort($dimOrder); // menor a mayor
+    asort($dimOrder);
     $worstDim = array_key_first($dimOrder);
 
-    // mapa de tipos sugeridos por dimensión
     $typeMap = [
       'emotional' => ['meditation','audio','article'],
       'stress' => ['breathing','exercise','video'],
@@ -156,7 +145,6 @@ class AssessmentService {
     ];
     $types = $typeMap[$worstDim] ?? ['article','video'];
 
-    // busco recursos por tipo (y dejo el sistema libre por ahora del cuestionario)
     $in = implode(',', array_fill(0, count($types), '?'));
     $sql = "SELECT id_resource, title, type_resource, url, description
             FROM resources
