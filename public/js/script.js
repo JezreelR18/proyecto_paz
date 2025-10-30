@@ -6,7 +6,6 @@ function hideLogin() {
     window.location.href = 'index.php?page=home';
 }
 
-// Función para simular el login
 function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;

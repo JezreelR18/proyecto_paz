@@ -1,31 +1,43 @@
 <?php
-// Mostrar todos los errores en pantalla (solo para desarrollo)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+  ini_set('display_errors', 1);
+  ini_set('display_startup_errors', 1);
+  error_reporting(E_ALL);
+  ini_set('log_errors', 1);
+  ini_set('error_log', __DIR__ . '/php_errors.log');
 
-// También logear a un archivo específico
-ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/php_errors.log');
-// index.php
-define('ROOT_PATH', __DIR__);
+  define('ROOT_PATH', __DIR__);
+  session_start();
 
-session_start();
+  $page = $_GET['page'] ?? 'home';
 
-// Manejo de rutas básico
-$page = $_GET['page'] ?? 'home';
-
-// Incluir header
-include ROOT_PATH . '/view/templates/header.html';
-
-// Cargar la vista correspondiente
-$viewPath = ROOT_PATH . "/view/{$page}.html";
-if (file_exists($viewPath)) {
-    include $viewPath;
-} else {
-    include ROOT_PATH . '/view/home.html';
-}
-
-// Incluir footer
-include ROOT_PATH . '/view/templates/footer.html';
+  $allowed = ['home','biblioteca','frases','login','register', 'herramientas', 'cuestionario', 'cuestionario_resultado'];
+  if (!in_array($page, $allowed)) { $page = 'home'; }
 ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cultura de Paz - Para Estudiantes</title>
+  <link rel="stylesheet" href="public/css/style.css" />
+  <link rel="stylesheet" href="public/css/home.css" />
+  <link rel="stylesheet" href="public/css/biblioteca.css" />
+  <script src="public/js/auth.js"></script>
+  <link rel="stylesheet" href="public/css/assessments.css">
+  <script src="public/js/assessments.js" defer></script>
+  <link rel="stylesheet" href="public/css/assessments-detail.css">
+  <script src="public/js/assessments-detail.js" defer></script>
+</head>
+<body>
+  <div class="layout">
+    <?php include ROOT_PATH . '/view/templates/header.html'; ?>
+    <main class="content">
+      <div class="container">
+        <?php include ROOT_PATH . "/view/{$page}.html"; ?>  
+      </div>
+    </main>
+  </div>
+
+  <?php include ROOT_PATH . '/view/templates/footer.html'; ?>
+</body>
+</html>

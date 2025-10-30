@@ -133,3 +133,137 @@ CREATE INDEX idx_bitacore_user_register ON bitacore(id_user_register);
 
 
 SHOW TABLES;
+
+--INSERSIÓN DE DATOS
+--Insertar el usuario de sistema el id 1
+
+INSERT INTO users 
+  (id_user, fullname, username, password, email, role, is_signed, enable)
+VALUES
+  (1, 'Sistema', 'system',
+   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', -- bcrypt de "password"
+   'system@local', 'system', 1, 1)
+ON DUPLICATE KEY UPDATE
+  fullname = VALUES(fullname),
+  username = VALUES(username),
+  email    = VALUES(email),
+  role     = VALUES(role),
+  is_signed= VALUES(is_signed),
+  enable   = VALUES(enable);
+
+--Insertar los recursos
+INSERT INTO resources 
+(title, type_resource, url, description, id_user_register)
+VALUES
+-- 1. Meditación guiada
+('Meditación guiada: Calma y Presencia',
+ 'meditation',
+ 'https://open.spotify.com/episode/3fCGuidaCalmaPresencia',
+ 'Una meditación corta de 10 minutos para reconectar con el presente y soltar la tensión acumulada.',
+ 1),
+
+-- 2. Podcast de manejo del estrés
+('Podcast: Estrés y cómo regularlo con la respiración consciente',
+ 'podcast',
+ 'https://open.spotify.com/episode/estrés-respiracion',
+ 'Episodio educativo que explica cómo el ritmo de la respiración puede transformar tu respuesta al estrés cotidiano.',
+ 1),
+
+-- 3. Artículo de autocompasión
+('Artículo: La práctica de la autocompasión',
+ 'article',
+ 'https://www.mindful.org/es/la-practica-de-la-autocompasion/',
+ 'Lectura breve que enseña a reemplazar la autocrítica por comprensión y amabilidad hacia uno mismo.',
+ 1),
+
+-- 4. Guía para resolver conflictos
+('Guía práctica: Comunicación no violenta',
+ 'guide',
+ 'https://www.cnvcolombia.org/guias/comunicacion-no-violenta.pdf',
+ 'Documento en PDF con pasos claros para expresar necesidades sin atacar ni defenderse, fomentando empatía en los conflictos.',
+ 1),
+
+-- 5. Video inspiracional
+('Video: El poder de la gratitud cotidiana',
+ 'video',
+ 'https://www.youtube.com/watch?v=2fL9JdG8LFA',
+ 'Video corto que muestra cómo el hábito de agradecer transforma la percepción diaria y fortalece la paz interior.',
+ 1),
+
+-- 6. Actividad de reflexión personal
+('Ejercicio de diario: Conectando con mi propósito',
+ 'reflection',
+ 'https://miwebpaz.org/descargas/diario-proposito.pdf',
+ 'Plantilla descargable para reflexionar sobre tus valores, motivaciones y propósito personal. Ideal para fortalecer la autoconciencia.',
+ 1);
+
+
+--Insertar los cuestionarios y sus preguntas
+START TRANSACTION;
+
+-- 1 Cabecera del cuestionario
+INSERT INTO questionnaires
+  (title, description, category, total_questions, is_active)
+VALUES
+  (
+    'Autoevaluación de la Paz Interior',
+    'Evalúa tu conexión con el presente, tus niveles de estrés, tus tendencias ante conflictos y tu conexión con sentido y gratitud.',
+    'general_wellbeing',
+    20,
+    TRUE
+  );
+
+-- Guardamos el id generado
+SET @qid := LAST_INSERT_ID();
+
+-- (Opcional) Plantilla de opciones para escala Likert 1-5 (si no la usas, puedes dejar options = NULL)
+SET @likert := JSON_ARRAY(
+  JSON_OBJECT('text','Totalmente en desacuerdo','value',1,'score',1),
+  JSON_OBJECT('text','En desacuerdo','value',2,'score',2),
+  JSON_OBJECT('text','Neutral','value',3,'score',3),
+  JSON_OBJECT('text','De acuerdo','value',4,'score',4),
+  JSON_OBJECT('text','Totalmente de acuerdo','value',5,'score',5)
+);
+
+-- (2) Preguntas (20)
+-- ===== Bloque 1: Estado Emocional y Presente (dimension = 'emotional') =====
+INSERT INTO questions
+(id_questionnaire, question_text, question_type, options, weight, question_order, dimension)
+VALUES
+(@qid, '¿Esta semana me he sentido realmente presente, sin estar rumiando sobre el pasado o ansioso por el futuro?', 'likert_scale', @likert, 1.00, 1,  'emotional'),
+(@qid, 'Cuando surge una emoción difícil (tristeza, enfado, frustración), ¿puedo observarla sin juzgarme y permitir que pase, o tiendo a quedarme atrapado en ella?', 'likert_scale', @likert, 1.00, 2,  'emotional'),
+(@qid, '¿Soy consciente de las señales físicas de mi cuerpo (tensión muscular, respiración acelerada, nudo en el estómago) que indican mi estado emocional?', 'likert_scale', @likert, 1.00, 3,  'emotional'),
+(@qid, '¿Con qué facilidad puedo encontrar momentos de calma y silencio interior durante mi día, incluso en medio del ajetreo?', 'likert_scale', @likert, 1.00, 4,  'emotional'),
+(@qid, '¿Mi estado de ánimo general se siente estable y sereno, o es como una montaña rusa de altibajos?', 'likert_scale', @likert, 1.00, 5,  'emotional');
+
+-- ===== Bloque 2: Nivel de Estrés y Energía (dimension = 'stress') =====
+INSERT INTO questions
+(id_questionnaire, question_text, question_type, options, weight, question_order, dimension)
+VALUES
+(@qid, 'Al final del día, ¿suelo sentirme agotado física y mentalmente, o aún me queda una reserva de energía tranquila?', 'likert_scale', @likert, 1.00, 6,  'stress'),
+(@qid, '¿Cómo manejo las situaciones imprevistas o los cambios de planes? ¿Reacciono con irritación y resistencia o con flexibilidad y aceptación?', 'likert_scale', @likert, 1.00, 7,  'stress'),
+(@qid, '¿Mis pensamientos suelen ser acelerados, repetitivos y centrados en las preocupaciones?', 'likert_scale', @likert, 1.00, 8,  'stress'),
+(@qid, '¿Dedico tiempo conscientemente a actividades que me recargan (leer, pasear en la naturaleza, un hobby, no hacer nada) o priorizo siempre la productividad?', 'likert_scale', @likert, 1.00, 9,  'stress'),
+(@qid, '¿La calidad de mi sueño es reparadora, o tengo dificultades para conciliar el sueño porque mi mente no para?', 'likert_scale', @likert, 1.00, 10, 'stress');
+
+-- ===== Bloque 3: Conflictos y Relaciones (dimension = 'conflict') =====
+INSERT INTO questions
+(id_questionnaire, question_text, question_type, options, weight, question_order, dimension)
+VALUES
+(@qid, 'Cuando tengo un desacuerdo con alguien, ¿mi primer impulso es atacar/defenderme, huir de la situación, o puedo escuchar con curiosidad y expresarme con calma?', 'likert_scale', @likert, 1.00, 11, 'conflict'),
+(@qid, '¿Con qué frecuencia me critico o me juzgo con dureza por mis errores? ¿Puedo practicar la autocompasión?', 'likert_scale', @likert, 1.00, 12, 'conflict'),
+(@qid, '¿Siento que guardo resentimientos o rencores del pasado que pesan en mi presente?', 'likert_scale', @likert, 1.00, 13, 'conflict'),
+(@qid, '¿Tiendo a asumir la responsabilidad de cosas que no me corresponden (estados de ánimo de otros, resultados que no controlo)?', 'likert_scale', @likert, 1.00, 14, 'conflict'),
+(@qid, '¿Puedo establecer límites saludables sin sentirme culpable, diciendo "no" cuando es necesario para mi bienestar?', 'likert_scale', @likert, 1.00, 15, 'conflict');
+
+-- ===== Bloque 4: Sentido y Gratitud (dimension = 'self_awareness') =====
+INSERT INTO questions
+(id_questionnaire, question_text, question_type, options, weight, question_order, dimension)
+VALUES
+(@qid, '¿Con qué frecuencia practico la gratitud, reconociendo conscientemente las cosas, por pequeñas que sean, que están bien en mi vida?', 'likert_scale', @likert, 1.00, 16, 'self_awareness'),
+(@qid, '¿Siento que mis acciones y mi día a día están alineados con mis valores y con lo que es realmente importante para mí?', 'likert_scale', @likert, 1.00, 17, 'self_awareness'),
+(@qid, '¿Me comparo frecuentemente con los demás (en lo personal, profesional, social), generando sentimientos de insuficiencia o envidia?', 'likert_scale', @likert, 1.00, 18, 'self_awareness'),
+(@qid, '¿Soy capaz de soltar la necesidad de controlar cada aspecto de mi vida y confío en que las cosas se resolverán como deban?', 'likert_scale', @likert, 1.00, 19, 'self_awareness'),
+(@qid, 'En general, ¿siento una sensación de confianza y fe (no necesariamente religiosa) en la vida y en mi capacidad para manejar lo que venga?', 'likert_scale', @likert, 1.00, 20, 'self_awareness');
+
+COMMIT;

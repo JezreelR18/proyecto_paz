@@ -1,0 +1,45 @@
+<section id="assessments" class="assessments">
+  <div class="assessments-header">
+    <h2>Autoevaluaciones</h2>
+    <p>Responde un cuestionario y recibe un análisis con recomendaciones personalizadas.</p>
+  </div>
+
+  <div class="user-stats" id="userStats">
+    <div class="stat-header">
+      <h4>Mis Cuestionarios</h4>
+    </div>
+    <div class="stat-body">
+      <p>Total respondidos: <strong id="totalAnswered">0</strong></p>
+      <ul id="answeredList" class="answered-list"></ul>
+    </div>
+  </div>
+
+
+  <div class="assessments-controls">
+    <label for="questionnaireSelect">Selecciona un cuestionario:</label>
+    <select id="questionnaireSelect" class="select"></select>
+    <button id="startBtn" disabled>Comenzar</button>
+  </div>
+
+  <div id="assessmentArea" class="assessment-area" hidden>
+    <div id="quizHeader" class="quiz-header"></div>
+    <form id="quizForm" class="quiz-form"></form>
+
+    <div class="quiz-actions">
+      <button id="submitBtn" class="btn primary">Enviar respuestas</button>
+      <button id="cancelBtn" class="btn ghost" type="button">Cancelar</button>
+    </div>
+  </div>
+
+  <div id="resultPanel" class="result-panel" hidden>
+    <h3>Resultado</h3>
+    <div id="scores" class="scores"></div>
+    <div id="categoryBadge" class="badge"></div>
+    <h4>Recomendaciones</h4>
+    <div id="recoGrid" class="reco-grid"></div>
+
+    <div class="quiz-actions">
+      <button id="newAttemptBtn" class="btn">Hacer otro cuestionario</button>
+    </div>
+  </div>
+</section>

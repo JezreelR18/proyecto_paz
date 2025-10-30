@@ -1,0 +1,129 @@
+.biblioteca-motivacional{
+  padding:1px;
+  background:#f7fafb;                 /* fondo general muy claro */
+}
+
+.bib-wrap{
+  display:grid;
+  grid-template-columns: 180px 3fr 5fr 180px;
+  grid-template-rows: 180px 230px 180px;  /* banner, pósters, pósters, fila inferior */
+  gap:10px;
+  background:#e6eef0;                  /* panel gris verdoso (como en la lámina) */
+  padding:4px;
+  border-radius:12px;
+  position:relative;
+  max-width:1500px;                     /* ancho contenido para look “lámina” */
+  margin-inline:auto;
+}
+
+.bib-item{
+  position:relative;
+  overflow:hidden;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.bib-item img{
+  width:100%; height:100%;
+  object-fit:cover; display:block;
+}
+.bib-item.contain img{ object-fit:contain; background:#fff; }
+
+.i1{ grid-column:1; grid-row:1; }                 /* Cuadro izq arriba */
+.banner{
+  grid-column:2 / 4; grid-row:1;                  /* Banner ancho centrado */
+  background:#ffdca1;                             /* amarillo cálido */
+  display:grid; place-items:center; text-align:center;
+  border-radius:40px;                              /* “píldora” */
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+.banner h3{
+  margin:0;
+  font-weight:800;
+  font-size:clamp(10px, 2.1vw, 28px);             /* grande pero contenido */
+  line-height:1.01; letter-spacing:.3px;
+  color:#23343a;
+}
+.i2{ grid-column:4; grid-row:1; }                 /* Cuadro der arriba */
+
+.i3{ grid-column:1; grid-row:2; }                 /* Cuadro izq medio */
+.i6{ grid-column:4; grid-row:2; }                 /* Gandhi (usa .contain en el HTML) */
+
+.i4{
+  grid-column:2; grid-row:2 / span 2;
+  border:8px solid #f4f7f8;                       /* marco blanco como en la lámina */
+}
+.i5{
+  grid-column:3; grid-row:2 / span 2;
+  border:8px solid #f4f7f8;
+}
+
+.i7{ grid-column:1; grid-row:3; }                 /* Cuadro izq abajo */
+.i8{ grid-column:4; grid-row:3; }                 /* Cuadro der abajo */
+
+/* ---------------- Detalles visuales ---------------- */
+.bib-item,
+.bib-item img{ border-radius:14px; }
+
+.bib-wrap::before,
+.bib-wrap::after{
+  content:"";
+  position:absolute; top:220px; bottom:22px;      /* entre banner y fila inferior */
+  width:10px; background:#b9c5c9; border-radius:5px;
+  display:none;
+}
+.bib-wrap::before{ left:260px; }
+.bib-wrap::after { right:260px; } 
+
+@media (max-width:1200px){
+  .bib-wrap{ max-width:1000px; }
+}
+@media (max-width:992px){
+  .bib-wrap{
+    grid-template-columns: 1fr 1fr;               /* 2 columnas */
+    grid-template-rows: auto;                     /* alturas automáticas */
+    gap:16px; padding:20px;
+  }
+  .banner{ grid-column:1 / -1; }
+  .i1{ grid-column:1; } .i2{ grid-column:2; }
+  .i3{ grid-column:1; } .i6{ grid-column:2; }
+  .i4{ grid-column:1; } .i5{ grid-column:2; }
+  .i7{ grid-column:1; } .i8{ grid-column:2; }
+  .i4, .i5{ border-width:6px; }
+}
+@media (max-width:600px){
+  .bib-wrap{
+    grid-template-columns:1fr;
+    gap:14px; padding:16px; max-width:540px;
+  }
+  .banner{ grid-column:1; border-radius:28px; }
+  .i1, .i2, .i3, .i4, .i5, .i6, .i7, .i8{ grid-column:1; }
+}
+
+
+.content.container { 
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.biblioteca-motivacional {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #f7fafb;
+}
+
+.bib-wrap {
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: #e6eef0;
+}
+
+section, main, .canvas, .container, .content {
+  margin: 0 !important;
+  padding: 10px !important;
+}
+

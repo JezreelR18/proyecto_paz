@@ -1,82 +1,77 @@
 <?php
-// model/UserModel.php
 require_once __DIR__ . '/Database.php';
 
 class UserModel {
-    private $db;
-    
+    private $pdo;
     public function __construct() {
-        $this->db = (new Database())->getConnection();
-        error_log("Database connection: " . ($this->db ? "SUCCESS" : "FAILED"));
+        $db = new Database();
+        $this->pdo = $db->getConnection();
     }
-    
-    public function createUser($userData) {
-        try {
-            error_log("=== CREATE USER ===");
-            error_log("User data: " . print_r($userData, true));
-            
-            $query = "INSERT INTO users (fullname, username, password, email, role) 
-                     VALUES (:fullname, :username, :password, :email, :role)";
-            
-            error_log("Query: $query");
-            
-            $stmt = $this->db->prepare($query);
-            
-            // Hash de la contraseña
-            $hashedPassword = password_hash($userData['password'], PASSWORD_DEFAULT);
-            error_log("Password hashed: " . ($hashedPassword ? "YES" : "NO"));
-            
-            $stmt->bindParam(":fullname", $userData['fullname']);
-            $stmt->bindParam(":username", $userData['username']);
-            $stmt->bindParam(":password", $hashedPassword);
-            $stmt->bindParam(":email", $userData['email']);
-            $stmt->bindParam(":role", $userData['role']);
-            
-            $result = $stmt->execute();
-            error_log("Execute result: " . ($result ? "TRUE" : "FALSE"));
-            
-            if (!$result) {
-                $errorInfo = $stmt->errorInfo();
-                error_log("PDO Error: " . print_r($errorInfo, true));
+
+    public function userExists(string $username, string $email): bool {
+        $sql = "SELECT 1 FROM users WHERE username = :u OR email = :e LIMIT 1";
+        $st  = $this->pdo->prepare($sql);
+        $st->execute([':u'=>$username, ':e'=>$email]);
+        return (bool)$st->fetchColumn();
+    }
+
+    public function createUser(array $data): bool {
+        $hash = password_hash($data['password'], PASSWORD_DEFAULT);
+
+        $sql = "INSERT INTO users (fullname, username, email, password, role)
+                VALUES (:f, :u, :e, :p, :r)";
+        $st = $this->pdo->prepare($sql);
+        return $st->execute([
+            ':f' => $data['fullname'],
+            ':u' => $data['username'],
+            ':e' => $data['email'],
+            ':p' => $hash,
+            ':r' => $data['role'] ?? 'estudiante',
+        ]);
+    }
+
+    public function validateUser(string $usernameOrEmail, string $password) {
+        $sql = "SELECT id_user, username, fullname, role, password
+                FROM users
+                WHERE username = :u OR email = :u
+                LIMIT 1";
+        $st = $this->pdo->prepare($sql);
+        $st->execute([':u' => $usernameOrEmail]);
+        $user = $st->fetch(PDO::FETCH_ASSOC);
+        if (!$user) return false;
+
+        $stored = $user['password'];
+
+        $info = password_get_info($stored);
+        $isHashed = !empty($info['algo']);
+
+        $valid = false;
+
+        if ($isHashed) {
+            $valid = password_verify($password, $stored);
+
+            if ($valid && password_needs_rehash($stored, PASSWORD_DEFAULT)) {
+                $this->updatePasswordHash((int)$user['id_user'], $password);
             }
-            
-            return $result;
-        } catch(PDOException $e) {
-            error_log("PDO Exception: " . $e->getMessage());
-            error_log("Error Code: " . $e->getCode());
-            return false;
+        } else {
+            $valid = hash_equals($stored, $password);
+            if ($valid) {
+                $this->updatePasswordHash((int)$user['id_user'], $password);
+            }
         }
+
+        if (!$valid) return false;
+
+        unset($user['password']);
+        return $user;
     }
-    
-    public function userExists($username, $email) {
-        try {
-            $query = "SELECT id_user FROM users WHERE username = :username OR email = :email";
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(":username", $username);
-            $stmt->bindParam(":email", $email);
-            $stmt->execute();
-            
-            $exists = $stmt->rowCount() > 0;
-            error_log("User exists check - Username: $username, Email: $email, Exists: " . ($exists ? "YES" : "NO"));
-            
-            return $exists;
-        } catch(PDOException $e) {
-            error_log("userExists Error: " . $e->getMessage());
-            return false;
-        }
-    }
-    
-    public function getUserById($id) {
-        try {
-            $query = "SELECT id_user, username, fullname, email, role FROM users WHERE id_user = :id";
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(":id", $id);
-            $stmt->execute();
-            
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch(PDOException $e) {
-            return false;
-        }
+
+    private function updatePasswordHash(int $userId, string $plainPassword): void {
+        $newHash = password_hash($plainPassword, PASSWORD_DEFAULT);
+        $sql = "UPDATE users SET password = :p WHERE id_user = :id";
+        $st  = $this->pdo->prepare($sql);
+        $st->execute([':p'=>$newHash, ':id'=>$userId]);
     }
 }
+
 ?>

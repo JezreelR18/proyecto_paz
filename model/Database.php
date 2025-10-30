@@ -1,5 +1,4 @@
 <?php
-// model/Database.php
 class Database {
     private $host = 'localhost';
     private $db_name = 'proyecto_paz_db';
