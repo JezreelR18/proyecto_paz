@@ -1,10 +1,3 @@
-CREATE USER 'aleli_garcia'@'localhost' IDENTIFIED BY 'Aleli2025';
-
-GRANT ALL PRIVILEGES ON proyecto_paz_db.* TO 'aleli_garcia'@'localhost';
-
-FLUSH PRIVILEGES;
-
-
 CREATE TABLE users (
     id_user INT AUTO_INCREMENT PRIMARY KEY,
     fullname VARCHAR(100) NOT NULL,
@@ -119,13 +112,9 @@ CREATE INDEX idx_users_username ON users(username);
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_resources_user_register ON resources(id_user_register);
 CREATE INDEX idx_comments_user_register ON comments(id_user_register);
-CREATE INDEX idx_bitacore_user_register ON bitacore(id_user_register);
 
 
 SHOW TABLES;
-
---INSERSIÓN DE DATOS
---Insertar el usuario de sistema el id 1
 
 INSERT INTO users 
   (id_user, fullname, username, password, email, role, is_signed, enable)
@@ -141,46 +130,39 @@ ON DUPLICATE KEY UPDATE
   is_signed= VALUES(is_signed),
   enable   = VALUES(enable);
 
---Insertar los recursos
 INSERT INTO resources 
 (title, type_resource, url, description, id_user_register)
 VALUES
--- 1. Meditación guiada
 ('Meditación guiada: Calma y Presencia',
  'meditation',
  'https://open.spotify.com/episode/3fCGuidaCalmaPresencia',
  'Una meditación corta de 10 minutos para reconectar con el presente y soltar la tensión acumulada.',
  1),
 
--- 2. Podcast de manejo del estrés
 ('Podcast: Estrés y cómo regularlo con la respiración consciente',
  'podcast',
  'https://open.spotify.com/episode/estrés-respiracion',
  'Episodio educativo que explica cómo el ritmo de la respiración puede transformar tu respuesta al estrés cotidiano.',
  1),
 
--- 3. Artículo de autocompasión
 ('Artículo: La práctica de la autocompasión',
  'article',
  'https://www.mindful.org/es/la-practica-de-la-autocompasion/',
  'Lectura breve que enseña a reemplazar la autocrítica por comprensión y amabilidad hacia uno mismo.',
  1),
 
--- 4. Guía para resolver conflictos
 ('Guía práctica: Comunicación no violenta',
  'guide',
  'https://www.cnvcolombia.org/guias/comunicacion-no-violenta.pdf',
  'Documento en PDF con pasos claros para expresar necesidades sin atacar ni defenderse, fomentando empatía en los conflictos.',
  1),
 
--- 5. Video inspiracional
 ('Video: El poder de la gratitud cotidiana',
  'video',
  'https://www.youtube.com/watch?v=2fL9JdG8LFA',
  'Video corto que muestra cómo el hábito de agradecer transforma la percepción diaria y fortalece la paz interior.',
  1),
 
--- 6. Actividad de reflexión personal
 ('Ejercicio de diario: Conectando con mi propósito',
  'reflection',
  'https://miwebpaz.org/descargas/diario-proposito.pdf',
@@ -188,10 +170,8 @@ VALUES
  1);
 
 
---Insertar los cuestionarios y sus preguntas
 START TRANSACTION;
 
--- 1 Cabecera del cuestionario
 INSERT INTO questionnaires
   (title, description, category, total_questions, is_active)
 VALUES
@@ -203,10 +183,8 @@ VALUES
     TRUE
   );
 
--- Guardamos el id generado
 SET @qid := LAST_INSERT_ID();
 
--- (Opcional) Plantilla de opciones para escala Likert 1-5 (si no la usas, puedes dejar options = NULL)
 SET @likert := JSON_ARRAY(
   JSON_OBJECT('text','Totalmente en desacuerdo','value',1,'score',1),
   JSON_OBJECT('text','En desacuerdo','value',2,'score',2),
@@ -215,8 +193,6 @@ SET @likert := JSON_ARRAY(
   JSON_OBJECT('text','Totalmente de acuerdo','value',5,'score',5)
 );
 
--- (2) Preguntas (20)
--- ===== Bloque 1: Estado Emocional y Presente (dimension = 'emotional') =====
 INSERT INTO questions
 (id_questionnaire, question_text, question_type, options, weight, question_order, dimension)
 VALUES
@@ -226,7 +202,6 @@ VALUES
 (@qid, '¿Con qué facilidad puedo encontrar momentos de calma y silencio interior durante mi día, incluso en medio del ajetreo?', 'likert_scale', @likert, 1.00, 4,  'emotional'),
 (@qid, '¿Mi estado de ánimo general se siente estable y sereno, o es como una montaña rusa de altibajos?', 'likert_scale', @likert, 1.00, 5,  'emotional');
 
--- ===== Bloque 2: Nivel de Estrés y Energía (dimension = 'stress') =====
 INSERT INTO questions
 (id_questionnaire, question_text, question_type, options, weight, question_order, dimension)
 VALUES
@@ -236,7 +211,6 @@ VALUES
 (@qid, '¿Dedico tiempo conscientemente a actividades que me recargan (leer, pasear en la naturaleza, un hobby, no hacer nada) o priorizo siempre la productividad?', 'likert_scale', @likert, 1.00, 9,  'stress'),
 (@qid, '¿La calidad de mi sueño es reparadora, o tengo dificultades para conciliar el sueño porque mi mente no para?', 'likert_scale', @likert, 1.00, 10, 'stress');
 
--- ===== Bloque 3: Conflictos y Relaciones (dimension = 'conflict') =====
 INSERT INTO questions
 (id_questionnaire, question_text, question_type, options, weight, question_order, dimension)
 VALUES
@@ -246,7 +220,6 @@ VALUES
 (@qid, '¿Tiendo a asumir la responsabilidad de cosas que no me corresponden (estados de ánimo de otros, resultados que no controlo)?', 'likert_scale', @likert, 1.00, 14, 'conflict'),
 (@qid, '¿Puedo establecer límites saludables sin sentirme culpable, diciendo "no" cuando es necesario para mi bienestar?', 'likert_scale', @likert, 1.00, 15, 'conflict');
 
--- ===== Bloque 4: Sentido y Gratitud (dimension = 'self_awareness') =====
 INSERT INTO questions
 (id_questionnaire, question_text, question_type, options, weight, question_order, dimension)
 VALUES
