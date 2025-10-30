@@ -40,16 +40,6 @@ CREATE TABLE comments (
 );
 
 
-CREATE TABLE bitacore (
-    id_logger INT AUTO_INCREMENT PRIMARY KEY,
-    module VARCHAR(255) NOT NULL,
-    note TEXT NOT NULL,
-    id_user_register INT, -- Nombre corregido
-    date_of_register TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_user_register) REFERENCES users(id_user) ON DELETE SET NULL
-);
-
-
 CREATE TABLE questionnaires (
     id_questionnaire INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
