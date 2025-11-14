@@ -1,4 +1,4 @@
-:root{
+/*:root{
   --bg: #efe3c7;
   --title-pill: #e7cf6c;
   --section-pill: #6c8bb2;
@@ -138,4 +138,298 @@ body{
 @media (max-width: 920px){
   .grid{ grid-template-columns: 1fr; }
   .art-frame{ min-height: 280px; }
+}
+*/
+/* Home.css - Tema Paz y Tranquilidad */
+:root {
+    --peace-blue: #a8d8ea;
+    --peace-green: #c7ecee;
+    --peace-lavender: #d6e4f0;
+    --peace-mint: #b8e0d2;
+    --peace-cream: #f5f5f5;
+    --text-dark: #2c3e50;
+    --text-medium: #5d7690;
+    --accent: #87ceeb;
+}
+
+.canvas {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Título principal */
+.title-pill {
+    width: fit-content;
+    margin: 0 auto 3rem;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--peace-blue), var(--accent));
+    font-family: 'Merriweather', serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+    color: var(--text-dark);
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(135, 206, 235, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.title-pill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+}
+
+.title-pill:hover::before {
+    left: 100%;
+}
+
+/* Grid principal */
+.grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+/* Títulos de sección */
+.section-title {
+    background: linear-gradient(135deg, var(--peace-blue), #6ab7e0);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(135, 206, 235, 0.3);
+    position: relative;
+}
+
+.section-title::after {
+    content: '☮️';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem;
+}
+
+/* Tarjetas */
+.card {
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(140, 180, 220, 0.15);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.card.info {
+    background: linear-gradient(135deg, var(--peace-cream), var(--peace-lavender));
+    padding: 2rem;
+    line-height: 1.8;
+    font-size: 1.05rem;
+    color: var(--text-medium);
+}
+
+.card.info:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(140, 180, 220, 0.25);
+}
+
+/* Enlaces */
+.inline-link {
+    color: #4a90e2;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+    padding: 0 2px;
+}
+
+.inline-link:hover {
+    color: #357abd;
+    border-bottom-color: #4a90e2;
+}
+
+/* Marco de arte */
+.art-frame {
+    background: linear-gradient(135deg, var(--peace-green), var(--peace-mint));
+    border-radius: 20px;
+    padding: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 380px;
+    box-shadow: 0 8px 25px rgba(184, 224, 210, 0.3);
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    position: relative;
+    overflow: hidden;
+}
+
+.art-frame::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    animation: float 20s linear infinite;
+}
+
+@keyframes float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(-20px, -20px) rotate(360deg); }
+}
+
+.dove {
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+    transition: transform 0.3s ease;
+}
+
+.dove:hover {
+    transform: scale(1.05);
+}
+
+/* Podcast */
+.podcast {
+    margin-top: 2rem;
+    border-radius: 15px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--peace-lavender), var(--peace-blue));
+}
+
+.podcast-title {
+    background: linear-gradient(135deg, #6ab7e0, #4a90e2);
+    color: var(--white);
+    font-weight: 700;
+    text-align: center;
+    padding: 1.2rem;
+    font-size: 1.1rem;
+}
+
+.podcast-link {
+    background: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.podcast-link a {
+    color: var(--text-dark);
+    font-weight: 600;
+    text-decoration: none;
+    word-break: break-all;
+    transition: color 0.3s ease;
+}
+
+.podcast-link a:hover {
+    color: #4a90e2;
+    text-decoration: underline;
+}
+
+/* Sección de enlaces */
+.links-wrap {
+    background: linear-gradient(135deg, var(--peace-mint), var(--peace-green));
+    border-radius: 15px;
+    margin-top: 2.5rem;
+    padding: 2rem;
+    box-shadow: 0 6px 20px rgba(184, 224, 210, 0.3);
+}
+
+.links-title {
+    background: linear-gradient(135deg, #5dbea3, #4ca88a);
+    color: var(--white);
+    font-weight: 700;
+    text-align: center;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.links {
+    list-style: none;
+    padding: 0 1rem 1rem;
+    margin: 0;
+    display: grid;
+    gap: 0.8rem;
+}
+
+.links a {
+    color: var(--text-medium);
+    text-decoration: none;
+    font-weight: 600;
+    word-break: break-all;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+    display: block;
+    border-left: 4px solid transparent;
+}
+
+.links a:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: #4a90e2;
+    border-left-color: #4a90e2;
+    transform: translateX(5px);
+}
+
+/* Responsive */
+@media (max-width: 920px) {
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .art-frame {
+        min-height: 300px;
+        padding: 2rem;
+    }
+    
+    .title-pill {
+        font-size: 1.2rem;
+        padding: 0.8rem 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .canvas {
+        padding: 1rem;
+    }
+    
+    .card.info {
+        padding: 1.5rem;
+    }
+    
+    .links-wrap {
+        padding: 1.5rem;
+    }
+}
+
+/* Animaciones suaves */
+.card, .links-wrap, .podcast {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
