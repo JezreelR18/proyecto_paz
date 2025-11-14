@@ -1,5 +1,6 @@
 (function () {
   let currentUserId = null;
+  let isSending = false;
 
   const BAD_WORDS = [
     'puta','puto','pendejo','pendeja','idiota','imbecil','inutil','estupido','estupida',
@@ -13,11 +14,14 @@
     const input = document.getElementById('messageInput');
     if (input) {
       input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
           commentsSend();
         }
       });
+      
+      // Focus al input cuando se carga la página
+      input.focus();
     }
   });
 
@@ -39,6 +43,7 @@
 
   async function loadComments() {
     try {
+      showLoading(true);
       const res = await fetch('api/comments.php?action=list&limit=200', { credentials: 'same-origin' });
       const raw = await res.text();
       let data;
@@ -56,9 +61,23 @@
     } catch (e) {
       console.error('[comments] list error', e);
       alert('No se pudieron cargar los comentarios.');
+    } finally {
+      showLoading(false);
     }
   }
 
+  function showLoading(show) {
+    const input = document.getElementById('messageInput');
+    const button = document.querySelector('.chat-input button');
+    
+    if (show) {
+      if (button) button.disabled = true;
+      if (input) input.placeholder = "Cargando mensajes...";
+    } else {
+      if (button) button.disabled = false;
+      if (input) input.placeholder = "Escribe tu mensaje...";
+    }
+  }
 
   function render(items) {
     const box = document.getElementById('chatMessages');
@@ -66,30 +85,35 @@
 
     box.innerHTML = `
       <div class="message bot-message">
-        <p>Bienvenido al chat moderado. Este es un espacio seguro para compartir ideas positivas y buenas prácticas de convivencia.</p>
+        <div class="message-meta">
+          <strong>Sistema</strong>
+        </div>
+        <p>Bienvenido al chat moderado. Este es un espacio seguro para compartir ideas positivas y buenas prácticas de convivencia. Nuestro asistente analizará tus mensajes para ofrecerte respuestas coherentes y útiles.</p>
       </div>
     `;
 
     for (const it of items) {
-      const isSystem = (it.author_id === 1) || (it.level_monitoring === 'suggestion');
+      const isSystem = (it.author_id === 1) || (it.level_monitoring === 'system' || it.level_monitoring === 'suggestion');
       const isMine = currentUserId && it.author_id === currentUserId;
 
       const author = isSystem
-        ? 'Sistema'
+        ? 'Asistente de Paz'
         : (it.author_fullname && it.author_fullname.trim()
             ? it.author_fullname
             : (it.author_username || 'Anónimo'));
 
       const when = new Date((it.date_of_register || '').replace(' ', 'T'));
-      const time = isNaN(when.getTime()) ? '' : when.toLocaleString();
+      const time = isNaN(when.getTime()) ? '' : when.toLocaleTimeString('es-MX', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
 
       const div = document.createElement('div');
       div.className = 'message ' + (isSystem ? 'bot-message' : (isMine ? 'user-message' : 'other-message'));
       div.innerHTML = `
-        <div class="message-meta" style="font-size:.8rem;opacity:.8;margin-bottom:.25rem;">
+        <div class="message-meta">
           <strong>${esc(author)}</strong>
-          ${time ? `<span style="margin-left:.5rem;">${esc(time)}</span>` : ''}
-          ${it.level_monitoring ? `<span style="margin-left:.5rem;">[${esc(it.level_monitoring)}]</span>` : ''}
+          ${time ? `<span class="message-time">${esc(time)}</span>` : ''}
         </div>
         <p>${esc(it.comment)}</p>
       `;
@@ -103,8 +127,11 @@
   window.commentsSend = commentsSend;
 
   async function commentsSend() {
+    if (isSending) return;
+    
     const input = document.getElementById('messageInput');
-    if (!input) return;
+    const button = document.querySelector('.chat-input button');
+    if (!input || !button) return;
 
     const original = input.value;
     const text = original.trim();
@@ -117,9 +144,14 @@
     }
 
     if (containsBadWords(text)) {
-      alert('Tu mensaje contiene palabras no permitidas. Por favor, reformúlalo.');
+      alert('Tu mensaje contiene palabras no permitidas. Por favor, reformúlalo de manera respetuosa.');
       return;
     }
+
+    isSending = true;
+    button.disabled = true;
+    input.disabled = true;
+    input.placeholder = "Enviando mensaje...";
 
     try {
       const res = await fetch('api/comments.php?action=create', {
@@ -129,7 +161,13 @@
       });
 
       const raw = await res.text();
-      let data = null; try { data = raw ? JSON.parse(raw) : null; } catch {}
+      let data = null; 
+      try { data = raw ? JSON.parse(raw) : null; } 
+      catch { 
+        console.error('[comments] JSON parse error:', raw);
+        throw new Error('Error en la respuesta del servidor');
+      }
+
       if (!res.ok) {
         console.error('[comments] create error', res.status, raw);
         if (res.status === 401) {
@@ -143,9 +181,20 @@
 
       input.value = '';
       await loadComments();
+      
+      // Focus de vuelta al input
+      setTimeout(() => {
+        input.focus();
+      }, 100);
+      
     } catch (e) {
       console.error(e);
       alert('Error de red al enviar el comentario.');
+    } finally {
+      isSending = false;
+      button.disabled = false;
+      input.disabled = false;
+      input.placeholder = "Escribe tu mensaje...";
     }
   }
 
@@ -161,6 +210,7 @@
       .replace(/\s+/g, ' ')
       .trim();
   }
+
   function containsBadWords(input) {
     const norm = normalizeText(input);
     if (!norm) return false;
@@ -179,60 +229,4 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
   }
-}
-
-)();
-
-const chatForm = document.querySelector('#chat-form') || document.querySelector('form');
-const chatInput = document.querySelector('#chat-input') || chatForm?.querySelector('input, textarea');
-const sendBtn = chatForm?.querySelector('button[type="submit"], #send-button');
-
-async function createComment(text) {
-  const res = await fetch('api/comments.php?action=create', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'same-origin',
-    body: JSON.stringify({
-      comment: text,
-      level_monitoring: 'normal'
-    })
-  });
-
-  const data = await res.json().catch(() => null);
-
-  if (!res.ok || !data?.ok) {
-    const msg = data?.error || 'No se pudo enviar el mensaje';
-    throw new Error(msg);
-  }
-}
-
-if (chatForm && chatInput) {
-  chatForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const text = chatInput.value.trim();
-    if (!text) return;
-
-    try {
-      if (sendBtn) sendBtn.disabled = true;
-
-      await createComment(text);
-
-      chatInput.value = '';
-
-      await loadComments();
-    } catch (err) {
-      console.error('[comments] Error al enviar:', err);
-      alert(err.message || 'Error enviando el mensaje');
-    } finally {
-      if (sendBtn) sendBtn.disabled = false;
-    }
-  });
-
-  chatInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      chatForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    }
-  });
-}
-
+})();

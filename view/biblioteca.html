@@ -1,39 +1,77 @@
 <section id="biblioteca" class="biblioteca-motivacional">
+  <!-- Modal para imágenes en grande -->
+  <dialog id="imageModal" class="image-modal">
+    <div class="modal-content">
+      <button class="close-modal" id="closeModal">&times;</button>
+      <img id="modalImage" src="" alt="Imagen ampliada">
+      <div class="image-caption" id="modalCaption"></div>
+    </div>
+  </dialog>
+
   <div class="bib-wrap">
-    <figure class="bib-item i1">
-      <img src="assets/images/dia-internacional-paz.png" alt="Día Internacional de la Paz">
+    <figure class="bib-item i1" data-caption="Día Internacional de la Paz">
+      <img src="assets/images/dia-internacional-paz.png" alt="Día Internacional de la Paz" data-src="assets/images/dia-internacional-paz.png">
     </figure>
 
-    <header class="bib-item banner">
+    <header id="title-banner" class="bib-item banner">
       <h3>BIBLIOTECA DE<br>IMÁGENES Y FRASES<br>MOTIVACIONALES</h3>
     </header>
 
-    <figure class="bib-item i2">
-      <img src="assets/images/manos-planeta.png" alt="Cuidar el planeta">
+    <figure class="bib-item i2" data-caption="Cuidar el planeta">
+      <img src="assets/images/manos-planeta.png" alt="Cuidar el planeta" data-src="assets/images/manos-planeta.png">
     </figure>
 
-    <figure class="bib-item i3">
-      <img src="assets/images/paloma-mundo.png" alt="Paz en el mundo">
+    <figure class="bib-item i3" data-caption="Paz en el mundo">
+      <img src="assets/images/paloma-mundo.png" alt="Paz en el mundo" data-src="assets/images/paloma-mundo.png">
     </figure>
 
-    <figure class="bib-item i4">
-      <img src="assets/images/solidaridad-conflictos.png" alt="Solidaridad en los conflictos">
+    <!-- Nuevas imágenes de frases de paz -->
+    <figure class="bib-item i9" data-caption="Batalla">
+      <img src="assets/images/batallas.webp" alt="La paz comienza con una sonrisa - Madre Teresa" data-src="assets/images/batallas.webp">
     </figure>
 
-    <figure class="bib-item i5">
-      <img src="assets/images/triptico-paz.png" alt="Tríptico educativo sobre la paz">
+    <figure class="bib-item i10" data-caption="No hay camino para la paz, la paz es el camino - Gandhi">
+      <img 
+      src="assets/images/librar.webp"
+      alt="No hay camino para la paz, la paz es el camino - Gandhi" data-src="assets/images/librar.webp">
     </figure>
 
-    <figure class="bib-item i6 contain">
-    <img src="assets/images/gandhi-cita.png" alt="Cita de Gandhi">
+    <figure class="bib-item i4" data-caption="Solidaridad en los conflictos">
+      <img src="assets/images/Solidaridad-conflictos.png" alt="Solidaridad en los conflictos" 
+      data-src="assets/images/Solidaridad-conflictos.png">
     </figure>
 
-    <figure class="bib-item i7">
-      <img src="assets/images/signo-paz-flores.png" alt="Símbolo de paz con flores">
+    <figure class="bib-item i5" data-caption="Tríptico educativo sobre la paz">
+      <img src="assets/images/triptico-paz.png" alt="Tríptico educativo sobre la paz" data-src="assets/images/triptico-paz.png">
     </figure>
 
-    <figure class="bib-item i8">
-      <img src="assets/images/paloma-manos.png" alt="La paz está en tus manos">
+    <!-- Más frases de paz -->
+    <figure class="bib-item i11" data-caption="La paz está en tus manos">
+      <img src="assets/images/paloma-manos.png" alt="La paz está en tus manos" data-src="assets/images/paloma-manos.png">
     </figure>
+
+    <figure class="bib-item i6 contain" data-caption="Cita de Gandhi">
+      <img src="assets/images/romper.webp" alt="Cita de Gandhi" data-src="assets/images/romper.webp">
+    </figure>
+
+    <figure class="bib-item i12" data-caption="La paz no es la ausencia de conflicto, sino la capacidad de manejarlo - John F. Kennedy">
+      <img src="assets/images/tranquilidad.webp" 
+      alt="La paz no es la ausencia de conflicto, sino la capacidad de manejarlo - John F. Kennedy" 
+      data-src="assets/images/tranquilidad.webp">
+    </figure>
+
+    <figure class="bib-item i7" data-caption="Símbolo de paz con flores">
+      <img src="assets/images/signo-paz-flores.png" alt="Símbolo de paz con flores" data-src="assets/images/signo-paz-flores.png">
+    </figure>
+
+    <figure class="bib-item i13" data-caption="Imagina a toda la gente viviendo la vida en paz - John Lennon">
+      <img 
+      src="assets/images/sonrisa.webp" 
+      alt="Imagina a toda la gente viviendo la vida en paz - John Lennon"
+      data-src="assets/images/sonrisa.webp">
+    </figure>
+
+  
   </div>
+  <script src="public/js/biblioteca.js" defer></script>
 </section>
