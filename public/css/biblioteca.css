@@ -1,19 +1,19 @@
+
+
 .biblioteca-motivacional{
-  padding:1px;
+  padding: 1rem;
   background:#f7fafb;      
 }
 
 .bib-wrap{
   display:grid;
-  grid-template-columns: 180px 3fr 5fr 180px;
-  grid-template-rows: 180px 230px 180px 180px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap:10px;
   background: antiquewhite;       
-  padding:4px;
+  padding:10px;
   border-radius:12px;
-  position:relative;
-  max-width:1500px;           
-  margin-inline:auto;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .bib-item{
@@ -22,6 +22,7 @@
   border-radius:14px;
   background:#fff;
   box-shadow:0 2px 8px rgba(0,0,0,.06);
+  cursor: pointer;
 }
 .bib-item img{
   width:100%; height:100%;
@@ -29,90 +30,89 @@
 }
 .bib-item.contain img{ object-fit:contain; background:#fff; }
 
-.i1{ grid-column:1; grid-row:1; }    
-  
 .banner{
-  grid-column:2 / 4; grid-row:1;               
-  background:rgb(78, 70, 59);                    
-  display:grid; place-items:center; text-align:center;
-  border-radius:40px;                            
+  grid-column: 1 / -1;
+  background:rgb(78, 70, 59);
+  display:grid; 
+  place-items:center; 
+  text-align:center;
+  border-radius:20px;
   box-shadow:0 4px 10px rgba(0,0,0,.08);
+  cursor: default;
 }
 .banner h3{
   margin:0;
   font-weight:800;
-  font-size:clamp(10px, 2.1vw, 28px);      
-  line-height:1.01; letter-spacing:.3px;
-  color:#23343a;
-}
-.i2{ grid-column:4; grid-row:1; }           
-
-.i3{ grid-column:1; grid-row:2; }      
-.i9{ grid-column:2; grid-row:2; }  
-.i10{ grid-column:3; grid-row:2; }           
-.i6{
-   grid-column:4; 
-   grid-row-start: 2;
-   grid-row-end: 4;
-    }               
-
-.i4{
-  grid-column:2; grid-row:3 / span 2;
-  border:8px solid #f4f7f8; 
-}
-.i5{
-  grid-column:3; grid-row:3 / span 2;
-  border:8px solid #f4f7f8;
+  font-size: 1.2rem;
+  line-height:1.2;
+  color:#fff;
 }
 
-.i11{ grid-column:1; grid-row:3; }
-.i12{ grid-column:4; grid-row:4; }                
-
-.i7{ grid-column:1; grid-row:4; } 
-.i13{ grid-column:2; grid-row:4; }                
-.i8{ grid-column:4; grid-row:4; }                 
-.bib-item,
-.bib-item img{ border-radius:14px; }
-
-.bib-wrap::before,
-.bib-wrap::after{
-  content:"";
-  position:absolute; top:220px; bottom:22px;
-  width:10px; background:#b9c5c9; border-radius:5px;
-  display:none;
-}
-.bib-wrap::before{ left:260px; }
-.bib-wrap::after { right:260px; } 
-
-@media (max-width:1200px){
-  .bib-wrap{ max-width:1000px; }
-}
-@media (max-width:992px){
+/* POSICIONAMIENTO PARA PANTALLAS GRANDES */
+@media (min-width: 1024px) {
   .bib-wrap{
-    grid-template-columns: 1fr 1fr;               
-    grid-template-rows: auto;                     
-    gap:16px; padding:20px;
+    grid-template-columns: 180px 3fr 5fr 180px;
+    grid-template-rows: 180px 230px 180px 180px;
+    gap:10px;
+    max-width:1500px;
   }
-  .banner{ grid-column:1 / -1; }
-  .i1{ grid-column:1; } .i2{ grid-column:2; }
-  .i3{ grid-column:1; } .i9{ grid-column:2; }
-  .i10{ grid-column:1; } .i6{ grid-column:2; }
-  .i4{ grid-column:1; } .i5{ grid-column:2; }
-  .i11{ grid-column:1; } .i12{ grid-column:2; }
-  .i7{ grid-column:1; } .i13{ grid-column:2; }
-  .i8{ grid-column:1; }
-  .i4, .i5{ border-width:6px; }
-}
-@media (max-width:600px){
-  .bib-wrap{
-    grid-template-columns:1fr;
-    gap:14px; padding:16px; max-width:540px;
+  
+  .banner{ 
+    grid-column:2 / 4; 
+    grid-row:1;
+    border-radius:40px;
   }
-  .banner{ grid-column:1; border-radius:28px; }
-  .i1, .i2, .i3, .i4, .i5, .i6, .i7, .i8, 
-  .i9, .i10, .i11, .i12, .i13{ grid-column:1; }
+  .banner h3{
+    font-size:clamp(10px, 2.1vw, 28px);
+  }
+  
+  .i1{ grid-column:1; grid-row:1; }    
+  .i2{ grid-column:4; grid-row:1; }           
+  .i3{ grid-column:1; grid-row:2; }      
+  .i9{ grid-column:2; grid-row:2; }  
+  .i10{ grid-column:3; grid-row:2; }           
+  .i6{ grid-column:4; grid-row-start: 2; grid-row-end: 4; }               
+  .i4{ grid-column:2; grid-row:3 / span 2; }
+  .i5{ grid-column:3; grid-row:3 / span 2; }
+  .i11{ grid-column:1; grid-row:3; }
+  .i12{ grid-column:4; grid-row:4; }                
+  .i7{ grid-column:1; grid-row:4; } 
+  .i13{ grid-column:2; grid-row:4; }                
+  .i8{ grid-column:4; grid-row:4; }
 }
 
+/* TABLETS */
+@media (max-width: 1023px) and (min-width: 769px) {
+  .bib-wrap{
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto;
+    gap:12px;
+  }
+  
+  .banner{
+    grid-column: 1 / -1;
+  }
+}
+
+/* MÓVILES */
+@media (max-width: 768px) {
+  .bib-wrap{
+    grid-template-columns: repeat(2, 1fr);
+    gap:8px;
+    padding:8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bib-wrap{
+    grid-template-columns: 1fr;
+    gap:6px;
+  }
+  
+  .banner{
+    border-radius:15px;
+  }
+}
 
 .content.container { 
   width: 100% !important;
@@ -148,8 +148,8 @@ section, main, .canvas, .container, .content {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
-  width: 130% !important;
-  height: 130% !important;
+  width: 100% !important;
+  height: 100% !important;
   background: rgba(42, 40, 40, 0.95) !important;
   border: none !important;
   z-index: 9999 !important;
@@ -160,7 +160,6 @@ section, main, .canvas, .container, .content {
 }
 
 .image-modal[open] {
-  position: absolute;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -206,34 +205,13 @@ section, main, .canvas, .container, .content {
   box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
 }
 
-.close-modal:hover {
-  background: #e0e0e0 !important;
-  transform: scale(1.1) !important;
-}
-
-.image-caption {
-  color: white !important;
-  text-align: center !important;
-  margin-top: 20px !important;
-  font-size: 18px !important;
-  font-weight: 500 !important;
-  background: rgba(0,0,0,0.7) !important;
-  padding: 10px 20px !important;
-  border-radius: 20px !important;
-}
-
 .bib-item {
-  cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .bib-item:hover {
   transform: scale(1.05);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.bib-item.banner {
-  cursor: default;
 }
 
 .bib-item.banner:hover {
@@ -243,5 +221,4 @@ section, main, .canvas, .container, .content {
 
 body.modal-open {
   overflow: hidden !important;
-  height: 100vh !important;
 }
