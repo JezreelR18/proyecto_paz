@@ -100,32 +100,14 @@ function containsBadWords(string $text): bool {
 }
 
 function analyzeAndRespond(string $text): string {
-    // Normalizamos para análisis, pero guardamos también el original
     $norm = normalize($text);
 
-    // Analizar mensaje (emociones, intención, temas, riesgo, etc.)
     $analysis = analyzeMessage($norm, $text);
 
-    // Generar respuesta en lenguaje natural
     return generateResponse($analysis, $text);
 }
 
-/**
- * Analiza el mensaje y devuelve un arreglo con MUCHOS datos:
- * - sentiment: positive | negative | neutral
- * - sentiment_score: número (más alto = más positivo)
- * - emotional_intensity: low | medium | high
- * - intent: vent | ask_advice | celebrate | share_update | general
- * - is_question: bool
- * - needs_empathy: bool
- * - needs_advice: bool
- * - needs_grounding: bool
- * - risk: none | medium | high
- * - risk_triggers: palabras/frases detectadas de riesgo
- * - topics: familia, amigos, pareja, escuela, trabajo, salud, futuro, emociones, dinero
- * - subtopics: bullying, autoestima, soledad, estres, motivacion, duelo, ansiedad, ira
- * - emotions: tristeza, ansiedad, enojo, miedo, soledad, frustracion, cansancio, alegria
- */
+
 function analyzeMessage(string $norm, string $original = ''): array {
 
     $tokens = preg_split('/\s+/', trim($norm));
@@ -149,11 +131,8 @@ function analyzeMessage(string $norm, string $original = ''): array {
         'length'               => $wordCount,
     ];
 
-    // ---------------------------
-    // 1. Diccionarios de palabras
-    // ---------------------------
 
-    // Palabras positivas (normalizadas, sin acentos)
+    // Palabras positivas 
     $positiveWords = [
         'feliz','contento','contenta','alegre','tranquilo','tranquila','calmado','calmada',
         'motivado','motivada','animado','animada','agradecido','agradecida','orgulloso','orgullosa',
@@ -254,7 +233,7 @@ function analyzeMessage(string $norm, string $original = ''): array {
         ]
     ];
 
-    // Emociones "principales" (para etiquetar)
+    // Emociones "principales" 
     $emotionWords = [
         'tristeza' => ['triste','tristeza','ganas de llorar','solo quiero llorar','llorando'],
         'ansiedad' => ['ansioso','ansiosa','ansiedad','nervioso','nerviosa','preocupado','preocupada','me preocupa'],
@@ -266,9 +245,7 @@ function analyzeMessage(string $norm, string $original = ''): array {
         'alegria'  => ['feliz','contento','contenta','alegre','emocionado','emocionada','orgulloso','orgullosa']
     ];
 
-    // ---------------------------
     // 2. Detectar riesgo (suicidio / autolesión)
-    // ---------------------------
     $crisisPatternsHigh = [
         'me quiero morir',
         'no quiero vivir',
@@ -325,9 +302,7 @@ function analyzeMessage(string $norm, string $original = ''): array {
         $analysis['needs_grounding'] = true;
     }
 
-    // ---------------------------
     // 3. Sentimiento + intensidad
-    // ---------------------------
 
     $score = 0;
     $hasPositive = false;
@@ -359,7 +334,6 @@ function analyzeMessage(string $norm, string $original = ''): array {
         }
     }
 
-    // Ajuste por longitud (mensajes largos tienden a ser más intensos emocionalmente)
     if ($wordCount > 40) {
         $intensityBoost += 1;
     }
@@ -394,9 +368,7 @@ function analyzeMessage(string $norm, string $original = ''): array {
         $analysis['emotional_intensity'] = 'low';
     }
 
-    // ---------------------------
     // 4. Detectar si es pregunta / pide consejo
-    // ---------------------------
     if (
         mb_strpos($original, '?') !== false ||
         preg_match('/\b(c[oó]mo|como|qu[eé]|que|por qu[eé]|porque|para qu[eé]|cuando|cu[aá]ndo|d[oó]nde|donde|debo|puedo|deber[ií]a|que hago|qu[eé] hago)\b/iu', $original)
@@ -405,9 +377,7 @@ function analyzeMessage(string $norm, string $original = ''): array {
         $analysis['needs_advice'] = true;
     }
 
-    // ---------------------------
     // 5. Detectar temas
-    // ---------------------------
     foreach ($topicMap as $topic => $list) {
         foreach ($list as $kw) {
             if (mb_strpos($norm, $kw) !== false) {
@@ -418,9 +388,7 @@ function analyzeMessage(string $norm, string $original = ''): array {
     }
     $analysis['topics'] = array_values(array_unique($analysis['topics']));
 
-    // ---------------------------
     // 6. Detectar subtemas
-    // ---------------------------
     foreach ($subtopicMap as $sub => $list) {
         foreach ($list as $kw) {
             if (mb_strpos($norm, $kw) !== false) {
@@ -431,9 +399,7 @@ function analyzeMessage(string $norm, string $original = ''): array {
     }
     $analysis['subtopics'] = array_values(array_unique($analysis['subtopics']));
 
-    // ---------------------------
     // 7. Detectar emociones específicas
-    // ---------------------------
     $emotionFlags = [];
     foreach ($emotionWords as $label => $list) {
         foreach ($list as $kw) {
@@ -454,9 +420,7 @@ function analyzeMessage(string $norm, string $original = ''): array {
     }
     $analysis['emotions'] = array_keys($emotionFlags);
 
-    // ---------------------------
-    // 8. Detectar intención (vent, advice, celebrate...)
-    // ---------------------------
+    // 8. Detectar intención 
     if ($analysis['is_question'] && $analysis['sentiment'] !== 'positive') {
         $analysis['intent'] = 'ask_advice';
     } elseif ($analysis['is_question'] && $analysis['sentiment'] === 'positive') {
@@ -499,9 +463,7 @@ function generateResponse(array $a, string $original): string {
     $risk      = $a['risk']                ?? 'none';
     $intensity = $a['emotional_intensity'] ?? 'low';
 
-    // ---------------------------
     // 1. Respuesta especial en caso de alto riesgo
-    // ---------------------------
     if ($risk === 'high') {
         return generateCrisisResponseHigh($a, $original);
     }
@@ -511,9 +473,7 @@ function generateResponse(array $a, string $original): string {
         return generateCrisisResponseMedium($a, $original);
     }
 
-    // ---------------------------
     // 2. Mapas para hacer la respuesta más "humana"
-    // ---------------------------
 
     $topicLabels = [
         'familia' => 'tu familia',
@@ -584,9 +544,7 @@ function generateResponse(array $a, string $original): string {
         "¿Te gustaría que pensemos juntos alguna forma concreta de cuidarte en esta situación?"
     ];
 
-    // ---------------------------
     // 3. Construir frases según temas y emociones
-    // ---------------------------
     $topicText = '';
     if (!empty($topics)) {
         $humanTopics = [];
@@ -613,9 +571,7 @@ function generateResponse(array $a, string $original): string {
         }
     }
 
-    // ---------------------------
     // 4. Respuestas especiales por subtemas
-    // ---------------------------
     if (!empty($subs)) {
         $sub = $subs[0]; // tomamos el más relevante
         if ($sub === 'bullying') {
@@ -671,9 +627,7 @@ function generateResponse(array $a, string $original): string {
         }
     }
 
-    // ---------------------------
     // 5. Construir respuesta general según sentimiento + intención
-    // ---------------------------
     $response = '';
 
     // A) Frase inicial según sentimiento
@@ -735,9 +689,7 @@ function generateResponse(array $a, string $original): string {
     return $response;
 }
 
-// ==========================================================
 // HELPERS ADICIONALES PARA LAS RESPUESTAS
-// ==========================================================
 
 /**
  * Une elementos como "a, b y c".

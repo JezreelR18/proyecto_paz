@@ -3,6 +3,7 @@
   let isSending = false;
 
   const BAD_WORDS = [
+    'p u t a',
     'puta','puto','pendejo','pendeja','idiota','imbecil','inutil','estupido','estupida',
     'mierda','zorra','marica','culero','cabron','perra','tarado','tarada'
   ];

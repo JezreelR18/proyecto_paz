@@ -10,7 +10,8 @@
 
   $page = $_GET['page'] ?? 'home';
 
-  $allowed = ['home','biblioteca','frases','login','register', 'herramientas', 'cuestionario', 'cuestionario_resultado'];
+  $allowed = ['home','biblioteca','frases','login','register', 'herramientas',
+   'cuestionario', 'cuestionario_resultado'];
   if (!in_array($page, $allowed)) { $page = 'home'; }
 ?>
 <!DOCTYPE html>
